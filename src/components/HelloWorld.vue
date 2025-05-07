@@ -1,10 +1,60 @@
-<script>
+<script setup>
 import { ref } from 'vue';
 import toto from '@/assets/toto.png';
 import PopUpDialog from './PopUpDialog.vue';
+import SnackBar from './SnackBar.vue';
 
 const dialog = ref(false); // This controls the dialog visibility
 const selectedImage = ref(''); // This holds the image to show
+
+
+const presents = [
+    {
+      title: 'Shoe horn',
+      imageUrl: new URL('@/assets/shoeHorn.png', import.meta.url).href,
+      icon: 'mdi-shoe-formal',
+      subtitle: 'For putting shoes on like a lazy ass',
+    },
+    {
+      title: 'Drone',
+      imageUrl: new URL('@/assets/drone.png', import.meta.url).href,
+      icon: 'mdi-quadcopter',
+      subtitle: `Don't crash it into a waterfall`,
+    },
+    {
+      title: 'Shirt',
+      imageUrl: new URL('@/assets/shirt.png', import.meta.url).href,
+      icon: 'mdi-tshirt-crew-outline',
+      subtitle: `I’d steal this from you and sleep in it`,
+    },
+    {
+      title: 'Coffee Beans',
+      imageUrl: new URL('@/assets/coffee.png', import.meta.url).href,
+      icon: 'mdi-coffee-outline',
+      subtitle: `I'm sure this coffee tastes better than yours`,
+    },
+  ];
+
+  const guess = ref(''); // User's guess
+
+
+  function openDialog(imageUrl) {
+  selectedImage.value = imageUrl;
+  dialog.value = true;
+}
+
+// Function to check the guess
+function checkGuess() {
+  const g = guess.value.trim().toLowerCase(); // Normalize guess (case-insensitive)
+  const correctAnswer = 'shirt'; // Correct answer (case insensitive)
+
+  // Check if the guess matches the correct answer
+  if (g === correctAnswer) {
+    alert(`🎉 Correct! You guessed the "${correctAnswer}"!`);
+  } else {
+    alert('❌ Nope, try again.');
+  }
+}
 
 </script>
 
@@ -44,7 +94,8 @@ const selectedImage = ref(''); // This holds the image to show
 
             <template #subtitle>
               <div class="text-subtitle-1">
-                <v-text-field label="Your guess" />
+                <v-text-field v-model="guess" label="Your guess" @keyup.enter="checkGuess()"/>
+                <v-btn @click="checkGuess()">check</v-btn>
               </div>
             </template>
 
@@ -53,7 +104,7 @@ const selectedImage = ref(''); // This holds the image to show
 
         <v-col v-for="present in presents" :key="present.href" cols="12" sm="6" >
           <v-card
-            append-icon="mdi-open-in-new"
+       
             class="py-4"
             color="surface-variant"
             :href="present.href"
@@ -65,47 +116,18 @@ const selectedImage = ref(''); // This holds the image to show
             :title="present.title"
             variant="tonal"
           >
-          <v-btn @click="dialog = true" color="primary">Open Dialog</v-btn>
-
+          <v-btn @click="openDialog(present.imageUrl)" color="primary" size="small" variant="text" class="ml-8">See Image</v-btn>
         </v-card>
         </v-col>
       </v-row>
     </div>
-    <PopUpDialog v-model="dialog" title="My Dialog">
+    <PopUpDialog v-model="dialog" :image-url="selectedImage" title="Is it this?">
   <!-- <template #content>
     This is some content for the dialog.
   </template> -->
 </PopUpDialog>
+<SnackBar></SnackBar>
   </v-container>
    
 </template>
 
-
-<script setup>
-  const presents = [
-    {
-      title: 'Shoe horn',
-      // href: 'https://boardroomsocks.com/cdn/shop/products/man-using-metal-shoe-horn-to-slide-on-brown-dress-shoes_1200x.jpg?v=1638314398',
-      icon: 'mdi-shoe-formal',
-      subtitle: 'For putting shoes on like a lazy ass',
-    },
-    {
-      title: 'Drone',
-      // href: 'https://i5.walmartimages.com/seo/Holy-Stone-Drone-HS175D-4K-Camera-Adults-Beginners-Foldable-GPS-Auto-Return-Home-Follow-Me-Mode-2-Batteries-Double-Flight-Time-Black_5ec35928-1082-4505-9e86-c447a1ae1ec8.c50821396b551ec2f0ce01a79149fae3.jpeg',
-      icon: 'mdi-quadcopter',
-      subtitle: `Don't crash it into a waterfall`,
-    },
-    {
-      title: 'T-Shirt',
-      // href: 'https://http2.mlstatic.com/D_NQ_NP_2X_620266-MLA83881932863_042025-F.webp',
-      icon: 'mdi-tshirt-crew-outline',
-      subtitle: `I’d steal this from you and sleep in it`,
-    },
-    {
-      title: 'Coffee Beans',
-      // href: 'https://acdn-us.mitiendanube.com/stores/005/741/718/products/duna250gr-b3d11f95de4a3fe4ed17434437598325-1024-1024.webp',
-      icon: 'mdi-coffee-outline',
-      subtitle: `I'm sure this coffee tastes better than yours`,
-    },
-  ]
-</script>

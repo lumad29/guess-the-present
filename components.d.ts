@@ -13,5 +13,7 @@ declare module 'vue' {
     PopUpDialog: typeof import('./src/components/PopUpDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SnackBar: typeof import('./src/components/SnackBar.vue')['default']
+    SnackBAr: typeof import('./src/components/SnackBAr.vue')['default']
   }
 }

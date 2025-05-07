@@ -1,58 +1,47 @@
-<template>
-    <v-dialog max-width="500">
-      <template #activator="{ props: activatorProps }">
-        <!-- <v-btn
-          v-bind="activatorProps"
-          :color="activatorColor"
-          :text="activatorText"
-          :variant="activatorVariant"
-        /> -->
-      </template>
-  
-      <template #default="{ isActive }">
-       
-        <v-card :title="title">
+<script setup>
+import { computed } from 'vue';
 
-             
-          <v-card-text>
-            <!-- <slot name="content">Default content goes here.</slot> -->
-            <v-img
-      src="@/assets/present.png"
-      alt="Present"
-      max-width="300"
-      class="mx-auto"
-    />
-          </v-card-text>
-          
-  
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn :text="closeText" @click="isActive.value = false" />
-          </v-card-actions>
-        </v-card>
-      </template>
-    </v-dialog>
-  </template>
-  
-  <script setup>
-  defineProps({
-    title: String,
-    activatorText: {
-      type: String,
-      default: 'Open Dialog',
-    },
-    closeText: {
-      type: String,
-      default: 'Close Dialog',
-    },
-    activatorColor: {
-      type: String,
-      default: 'surface-variant',
-    },
-    activatorVariant: {
-      type: String,
-      default: 'flat',
-    },
-  });
-  </script>
-  
+// Define props: v-model (modelValue), dynamic imageUrl, title, and optional close text
+const props = defineProps({
+  modelValue: Boolean,
+  imageUrl: String,
+  title: String,
+  closeText: { type: String, default: 'Close' },
+});
+// Emit event to update the parent dialog visibility
+const emit = defineEmits(['update:modelValue']);
+
+// Proxy modelValue prop into an internal reactive for v-dialog v-model binding
+const internalModel = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val),
+});
+</script>
+
+<template>
+  <!-- Bind the dialog visibility to internalModel -->
+  <v-dialog v-model="internalModel" max-width="500">
+    <!-- No internal activator: parent controls opening via v-model -->
+    <v-card :title="title">
+      <v-card-text>
+        <!-- Render the passed-in image dynamically -->
+        <v-img
+          v-if="imageUrl"
+          :src="imageUrl"
+          alt="Present"
+          max-width="300"
+          class="mx-auto"
+          cover
+        />
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer />
+        <!-- Close button uses the passed-in closeText prop -->
+        <v-btn text @click="internalModel = false">
+          {{ closeText }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
