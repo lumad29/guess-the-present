@@ -36,6 +36,9 @@ const presents = [
   ];
 
   const guess = ref(''); // User's guess
+  const snackbarMessage = ref('');
+  const showSnackbar = ref(false);
+  const snackbarColor = ref('');
 
 
   function openDialog(imageUrl) {
@@ -47,13 +50,18 @@ const presents = [
 function checkGuess() {
   const g = guess.value.trim().toLowerCase(); // Normalize guess (case-insensitive)
   const correctAnswer = 'shirt'; // Correct answer (case insensitive)
+  if (!g) return;
 
   // Check if the guess matches the correct answer
   if (g === correctAnswer) {
-    alert(`🎉 Correct! You guessed the "${correctAnswer}"!`);
+    snackbarMessage.value = `🎉 YAaaay! You guessed! It's a "${correctAnswer}"!`;
+    snackbarColor.value = 'success';
   } else {
-    alert('❌ Nope, try again.');
+    snackbarMessage.value = '❌ Nope, try again.';
+    snackbarColor.value = 'error';
   }
+  showSnackbar.value = true;
+  guess.value = '';
 }
 
 </script>
@@ -126,7 +134,14 @@ function checkGuess() {
     This is some content for the dialog.
   </template> -->
 </PopUpDialog>
-<SnackBar></SnackBar>
+
+<v-snackbar v-model="showSnackbar" :color="snackbarColor">
+  {{ snackbarMessage }}
+  <template #actions>
+    <v-btn variant="text" @click="showSnackbar = false">Close</v-btn>
+  </template>
+</v-snackbar>
+
   </v-container>
    
 </template>
